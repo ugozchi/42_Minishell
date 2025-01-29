@@ -43,9 +43,121 @@ Toute cette partie correspond à ce que l'on doit rendre pour ce faire corriger.
 
 <br>
 
-## Explication de la structure 🏗️
+## Explication de la structure 🏰
+Minishell est construit autour de plusieurs modules principaux qui interagissent pour exécuter les commandes de l'utilisateur. Voici un aperçu des principales structures et fichiers :
 
-## Tests et visualisation 📋
+1) Gestion des entrées et parsing
+
+`lexer.c` : Analyse la ligne de commande saisie par l'utilisateur et la découpe en tokens (arguments, redirections, opérateurs...)
+
+`parser.c` : Organise les tokens en une structure syntaxique exploitable, prenant en compte les priorités des opérateurs.
+
+`expander.c` : Gère les variables d'environnement ($HOME, $USER...), l'expansion des jokers (*), et les substitutions.
+
+<br>
+
+2) Gestion des processus et exécution
+
+`executor.c` : Exécute les commandes en tenant compte des redirections et des pipes.
+
+`builtin.c` : Implémente les commandes internes comme cd, echo, exit, env, unset...
+
+`redirect.c` : Gère les redirections (>, >>, <, <<) et assigne les descripteurs de fichier appropriés.
+
+`pipe.c` : Gère la communication entre plusieurs processus en enchaînant des commandes via |.
+
+<br>
+
+3) Gestion des signaux
+
+`signals.c` : Capture et gère les signaux système comme CTRL+C, CTRL+Z, CTRL+D pour permettre un comportement interactif du shell.
+
+`handler.c` : Définit le comportement du shell face aux interruptions utilisateur.
+
+<br>
+
+4) Gestion de l'environnement et mémoire
+
+`env.c` : Gère la liste des variables d'environnement et leur modification avec export et unset.
+
+`memory.c` : Assure la libération correcte de la mémoire pour éviter les fuites (free_all, clear_tokens...).
+
+<br>
+
+## Organisation du code 🔧
+
+1. Initialisation et Gestion de l'Environnement
+
+`init_env.c` : Charge les variables d'environnement et ajuste SHLVL.
+
+`init.c` : Initialise t_data, stocke les chemins d'exécution et configure les entrées/sorties.
+
+`get_env_export.c` : Récupère les variables d'environnement pour export et les ajuste si nécessaire.
+
+<br>
+
+2. Analyse Lexicale et Parsing
+
+`lexer_main.c` : Analyse la ligne de commande en tokens exploitables.
+
+`lexer_define_tokens.c` : Identifie le type des tokens (commandes, arguments, redirections, etc.).
+
+`lexer_quotes.c` : Gère les guillemets pour éviter les erreurs de parsing.
+
+`expander_main.c` : Gère l'expansion des variables ($USER, $PWD) et le remplacement des valeurs.
+
+`parser_main.c` : Organise les tokens en une structure syntaxique permettant l'exécution correcte.
+
+`parser_command_populate.c` : Associe les arguments et flags aux commandes.
+
+<br>
+
+3. Gestion des Redirections et Pipes
+
+`redirect.c : Gère les redirections (>, >>, <, <<) en ouvrant et fermant les fichiers nécessaires.
+
+`pipes_builder.c : Crée et gère les pipes pour la communication entre processus.
+
+`pipeline_execute.c : Exécute les commandes enchaînées avec | et redirige les entrées/sorties.
+
+<br>
+
+4. Exécution des Commandes
+
+`executer_main.c` : Coordonne l'exécution des commandes internes et externes.
+
+`command_executer.c` : Recherche le chemin des commandes et les exécute avec execve.
+
+`fd_manager.c` : Gère l'ouverture et la fermeture des fichiers lors de l'exécution.
+
+<br>
+
+5. Gestion des Signaux et du Contrôle du Shell
+
+`signals.c` : Capture CTRL+C, CTRL+Z, CTRL+D et ajuste le comportement du shell.
+
+`signals_here_doc.c` : Gère les interruptions pour heredoc.
+
+<br>
+
+6. Implémentation des Builtins
+
+`builtin.c` : Contient les commandes internes (cd, exit, env, unset, export,..).
+
+`echo.c` : Gère l'affichage de chaînes avec l'option -n.
+
+`cd.c` : Implémente la navigation dans les répertoires avec chdir().
+
+`export.c` et unset.c : Modifient les variables d'environnement.
+
+<br>
+
+7. Nettoyage et Libération de Mémoire
+
+`free_mem_btw_cmd.c` : Nettoie la mémoire entre chaque commande pour éviter les fuites.
+`free_all.c` : Libère toutes les ressources utilisées par le shell avant de quitter.
+
+<br>
 
 ## Note Final et Commentaires 📔
 
