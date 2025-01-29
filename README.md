@@ -21,7 +21,7 @@ Voici le [sujet](.media/en.subject.pdf).
 Clone le projet.
 
 ```
-git clone https://github.com/Les-Choubidous/42_Minishell.git
+git clone https://github.com/ugozchi/42_Minishell.git
 cd 42_Minishell
 ```
 
